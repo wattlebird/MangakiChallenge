@@ -16,6 +16,9 @@ def main():
     # lda negative feature
     #i4 = pd.read_csv(data+"features/item_ldaneg_10d.csv")
     #u4 = pd.read_csv(data+"features/user_ldaneg_10d.csv")
+    # lsi feature
+    i5 = pd.read_csv(data+"features/item_lsi_20d.csv")
+    u5 = pd.read_csv(data+"features/user_lsi_20d.csv")
 
     # merge with baseline feature file
     for i in [0, 1, 2, 3]:
@@ -30,17 +33,17 @@ def main():
                       merge(i1, on='work_id', how='left').\
                       merge(u1, on='user_id', how='left').\
                       merge(i3, on='work_id', how='left').\
-                      merge(u3, on='user_id', how='left')#.\
-                      #merge(i4, on='work_id', how='left').\
-                      #merge(u4, on='user_id', how='left')
+                      merge(u3, on='user_id', how='left').\
+                      merge(i5, on='work_id', how='left').\
+                      merge(u5, on='user_id', how='left')
         valid = valid.merge(i2, on='work_id', how='left').\
                       merge(u2, on='user_id', how='left').\
                       merge(i1, on='work_id', how='left').\
                       merge(u1, on='user_id', how='left').\
                       merge(i3, on='work_id', how='left').\
-                      merge(u3, on='user_id', how='left')#.\
-                      #merge(i4, on='work_id', how='left').\
-                      #merge(u4, on='user_id', how='left')
+                      merge(u3, on='user_id', how='left').\
+                      merge(i5, on='work_id', how='left').\
+                      merge(u5, on='user_id', how='left')
 
         train.to_csv(data+"latest/train_{0}.csv".format(i), index=False)
         if i != 0:
