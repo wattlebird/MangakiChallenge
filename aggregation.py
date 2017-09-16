@@ -5,11 +5,11 @@ data = "/mnt/d/Data/mangaki-data-challenge/"
 
 def main():
     # w2v feature
-    i1 = pd.read_csv(data+"features/item_w2v_32d.csv")
-    u1 = pd.read_csv(data+"features/user_w2v_32d.csv")
+    i1 = pd.read_csv(data+"features/item_w2v_shuffled_32d.csv")
+    u1 = pd.read_csv(data+"features/user_w2v_shuffled_32d.csv")
     # w2v negative feature
-    i2 = pd.read_csv(data+"features/item_w2vneg_10d.csv")
-    u2 = pd.read_csv(data+"features/user_w2vneg_10d.csv")
+    i2 = pd.read_csv(data+"features/item_w2vneg_shuffled_10d.csv")
+    u2 = pd.read_csv(data+"features/user_w2vneg_shuffled_10d.csv")
     # lda feature
     i3 = pd.read_csv(data+"features/item_lda_20d.csv")
     u3 = pd.read_csv(data+"features/user_lda_20d.csv")
