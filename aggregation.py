@@ -179,5 +179,117 @@ def wish_basic_lsi_w2v():
         train.to_csv(data+"latest/train_{0}.csv".format(i), index=False)
         valid.to_csv(data+"latest/valid_{0}.csv".format(i), index=False)
 
+def record_w2v_lda_lsi():
+    # w2v feature
+    i1 = pd.read_csv(data+"features/item_w2v_shuffled_32d.csv")
+    u1 = pd.read_csv(data+"features/user_w2v_shuffled_32d.csv")
+    # w2v negative feature
+    i2 = pd.read_csv(data+"features/item_w2vneg_shuffled_10d.csv")
+    u2 = pd.read_csv(data+"features/user_w2vneg_shuffled_10d.csv")
+    # lda feature
+    i3 = pd.read_csv(data+"features/item_lda_20d.csv")
+    u3 = pd.read_csv(data+"features/user_lda_20d.csv")
+    # lda negative feature
+    #i4 = pd.read_csv(data+"features/item_ldaneg_10d.csv")
+    #u4 = pd.read_csv(data+"features/user_ldaneg_10d.csv")
+    # lsi feature
+    i5 = pd.read_csv(data+"features/item_lsi_20d.csv")
+    u5 = pd.read_csv(data+"features/user_lsi_20d.csv")
+
+    # merge with baseline feature file
+    for i in [0, 1, 2, 3]:
+        train = pd.read_csv(data+"baseline/train_{0}.csv".format(i), usecols=["user_id","work_id","rating"])
+        if i != 0:
+            valid = pd.read_csv(data+"baseline/valid_{0}.csv".format(i), usecols=["user_id","work_id","rating"])
+        else:
+            valid = pd.read_csv(data+"baseline/test_{0}.csv".format(i), usecols=["user_id","work_id"])
+
+        train = train.merge(i2, on='work_id', how='left').\
+                      merge(u2, on='user_id', how='left').\
+                      merge(i1, on='work_id', how='left').\
+                      merge(u1, on='user_id', how='left').\
+                      merge(i3, on='work_id', how='left').\
+                      merge(u3, on='user_id', how='left').\
+                      merge(i5, on='work_id', how='left').\
+                      merge(u5, on='user_id', how='left')
+        valid = valid.merge(i2, on='work_id', how='left').\
+                      merge(u2, on='user_id', how='left').\
+                      merge(i1, on='work_id', how='left').\
+                      merge(u1, on='user_id', how='left').\
+                      merge(i3, on='work_id', how='left').\
+                      merge(u3, on='user_id', how='left').\
+                      merge(i5, on='work_id', how='left').\
+                      merge(u5, on='user_id', how='left')
+
+        train.to_csv(data+"latest/train_{0}.csv".format(i), index=False)
+        if i != 0:
+            valid.to_csv(data+"latest/valid_{0}.csv".format(i), index=False)
+        else:
+            valid.to_csv(data+"latest/test_{0}.csv".format(i), index=False)
+
+def level1stacking():
+    s1 = pd.read_csv(data+"features/level1/gbdt_train.csv", usecols = ['user_id','work_id','gbdt_prob'])
+    s2 = pd.read_csv(data+"features/level1/rf_train.csv", usecols = ['user_id','work_id','rf_prob'])
+    s3 = pd.read_csv(data+"features/level1/fm_train.csv", usecols = ['user_id','work_id','fm_prob'])
+    s4 = pd.read_csv(data+"features/level1/gbdt_wish_basic_w2v_lsi_train.csv", usecols=['user_id','work_id','gbdt_wish_basic_w2v_lsi_prob'])
+    s5 = pd.read_csv(data+"features/level1/gbdt_wish_w2v_lsi_train.csv", usecols=['user_id','work_id','gbdt_wish_w2v_lsi_prob'])
+    s6 = pd.read_csv(data+"features/level1/rf_wish_basic_w2v_lsi_train.csv", usecols=['user_id','work_id','rf_wish_basic_w2v_lsi_prob'])
+    s7 = pd.read_csv(data+"features/level1/rf_w2v_lda_lsi_train.csv", usecols=['user_id','work_id','rf_w2v_lda_lsi_prob'])
+    s8 = pd.read_csv(data+"features/level1/gbdt_w2v_lda_lsi_train.csv", usecols=['user_id','work_id','gbdt_w2v_lda_lsi_prob'])
+
+    for i in [1, 2, 3]:
+        train = pd.read_csv(data+"baseline/train_{0}.csv".format(i), usecols = ['user_id','work_id','rating'])
+        valid = pd.read_csv(data+"baseline/valid_{0}.csv".format(i), usecols = ['user_id','work_id','rating'])
+
+        train = train.merge(s1, on=['user_id', 'work_id'], how='left').\
+                    merge(s2, on=['user_id', 'work_id'], how='left').\
+                    merge(s3, on=['user_id', 'work_id'], how='left').\
+                    merge(s4, on=['user_id', 'work_id'], how='left').\
+                    merge(s5, on=['user_id', 'work_id'], how='left').\
+                    merge(s6, on=['user_id', 'work_id'], how='left').\
+                    merge(s7, on=['user_id', 'work_id'], how='left').\
+                    merge(s8, on=['user_id', 'work_id'], how='left')
+        valid = valid.merge(s1, on=['user_id', 'work_id'], how='left').\
+                    merge(s2, on=['user_id', 'work_id'], how='left').\
+                    merge(s3, on=['user_id', 'work_id'], how='left').\
+                    merge(s4, on=['user_id', 'work_id'], how='left').\
+                    merge(s5, on=['user_id', 'work_id'], how='left').\
+                    merge(s6, on=['user_id', 'work_id'], how='left').\
+                    merge(s7, on=['user_id', 'work_id'], how='left').\
+                    merge(s8, on=['user_id', 'work_id'], how='left')
+
+        train.to_csv(data+"latest/train_{0}.csv".format(i), index=False)
+        valid.to_csv(data+"latest/valid_{0}.csv".format(i), index=False)
+
+    train = pd.read_csv(data+"baseline/train_0.csv", usecols = ['user_id','work_id','rating'])
+    train = train.merge(s1, on=['user_id', 'work_id'], how='left').\
+                merge(s2, on=['user_id', 'work_id'], how='left').\
+                merge(s3, on=['user_id', 'work_id'], how='left').\
+                merge(s4, on=['user_id', 'work_id'], how='left').\
+                merge(s5, on=['user_id', 'work_id'], how='left').\
+                merge(s6, on=['user_id', 'work_id'], how='left').\
+                merge(s7, on=['user_id', 'work_id'], how='left').\
+                merge(s8, on=['user_id', 'work_id'], how='left')
+    train.to_csv(data+"latest/train_0.csv", index=False)
+
+    s1 = pd.read_csv(data+"features/level1/gbdt_test.csv", usecols = ['user_id','work_id','gbdt_prob'])
+    s2 = pd.read_csv(data+"features/level1/rf_test.csv", usecols = ['user_id','work_id','rf_prob'])
+    s3 = pd.read_csv(data+"features/level1/fm_test.csv", usecols = ['user_id','work_id','fm_prob'])
+    s4 = pd.read_csv(data+"features/level1/gbdt_wish_basic_w2v_lsi_test.csv", usecols=['user_id','work_id','gbdt_wish_basic_w2v_lsi_prob'])
+    s5 = pd.read_csv(data+"features/level1/gbdt_wish_w2v_lsi_test.csv", usecols=['user_id','work_id','gbdt_wish_w2v_lsi_prob'])
+    s6 = pd.read_csv(data+"features/level1/rf_wish_basic_w2v_lsi_test.csv", usecols=['user_id','work_id','rf_wish_basic_w2v_lsi_prob'])
+    s7 = pd.read_csv(data+"features/level1/rf_w2v_lda_lsi_test.csv", usecols=['user_id','work_id','rf_w2v_lda_lsi_prob'])
+    s8 = pd.read_csv(data+"features/level1/gbdt_w2v_lda_lsi_test.csv", usecols=['user_id','work_id','gbdt_w2v_lda_lsi_prob'])
+    valid = pd.read_csv(data+"latest/test_0.csv", usecols = ['user_id','work_id'])
+    valid = valid.merge(s1, on=['user_id', 'work_id'], how='left').\
+                merge(s2, on=['user_id', 'work_id'], how='left').\
+                merge(s3, on=['user_id', 'work_id'], how='left').\
+                merge(s4, on=['user_id', 'work_id'], how='left').\
+                merge(s5, on=['user_id', 'work_id'], how='left').\
+                merge(s6, on=['user_id', 'work_id'], how='left').\
+                merge(s7, on=['user_id', 'work_id'], how='left').\
+                merge(s8, on=['user_id', 'work_id'], how='left')
+    valid.to_csv(data+"latest/test_0.csv", index=False)
+
 if __name__=="__main__":
-    wish_basic_lsi_w2v()
+    level1stacking()
